@@ -1,0 +1,22 @@
+{
+  "name": "Bears Track Club",
+  "short_name": "Bears TC",
+  "description": "Official training app for Bears Track Club.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://placehold.co/192x192/1e3a8a/fbbf24?text=B",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://placehold.co/512x512/1e3a8a/fbbf24?text=BEARS",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
