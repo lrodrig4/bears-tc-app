@@ -46,13 +46,16 @@ const App: React.FC = () => {
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
+      // Initialize Firebase real-time sync
+      StorageService.initialize();
+
       const params = new URLSearchParams(window.location.search);
       const shareData = params.get('share');
       if (shareData) {
           try {
               const parsed = JSON.parse(atob(shareData));
               setPublicWorkout(parsed);
-              return; 
+              return;
           } catch (e) {
               console.error("Invalid share data");
           }
@@ -67,7 +70,7 @@ const App: React.FC = () => {
              const records = StorageService.getAttendanceForDate(today);
              const myRecord = records.find(r => r.userId === storedUser.id);
              setHasCheckedIn(!!myRecord);
-             
+
              const attendance = StorageService.getAttendance().filter(a => a.userId === storedUser.id);
              const now = new Date();
              const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -79,6 +82,25 @@ const App: React.FC = () => {
           }
       }
       refreshData();
+
+      // Listen for Firebase sync events to refresh data
+      const handleFirebaseSync = () => refreshData();
+      const handleUsersUpdate = () => {
+        setAllUsers(StorageService.getAllUsers());
+      };
+      const handleScheduleUpdate = () => {
+        setSchedule(StorageService.getSchedule());
+      };
+
+      window.addEventListener('firebase-synced', handleFirebaseSync);
+      window.addEventListener('users-updated', handleUsersUpdate);
+      window.addEventListener('schedule-updated', handleScheduleUpdate);
+
+      return () => {
+        window.removeEventListener('firebase-synced', handleFirebaseSync);
+        window.removeEventListener('users-updated', handleUsersUpdate);
+        window.removeEventListener('schedule-updated', handleScheduleUpdate);
+      };
   }, []);
 
   const refreshData = () => {
