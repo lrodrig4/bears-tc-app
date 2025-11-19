@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ScheduledWorkout, ParsedWorkout } from '../types';
 import { StorageService } from '../services/storage';
-import { ChevronLeft, ChevronRight, Trash2, Copy, Filter, Move } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trash2, Copy, Filter, Move, Eye } from 'lucide-react';
 import Select from './ui/Select';
+import WorkoutDetailModal from './WorkoutDetailModal';
 
 interface CalendarProps {
   workouts: ScheduledWorkout[];
@@ -17,6 +18,7 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
   const [filterGroup, setFilterGroup] = useState<string>('All');
   const [groups, setGroups] = useState<string[]>([]);
   const [draggedWorkout, setDraggedWorkout] = useState<string | null>(null);
+  const [selectedWorkout, setSelectedWorkout] = useState<ScheduledWorkout | null>(null);
 
   useEffect(() => { setGroups(StorageService.getGroups()); }, []);
 
@@ -64,7 +66,7 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
         onDrop={(e) => handleDrop(e, dateStr)}
         className={`h-28 border border-slate-100 p-1 relative cursor-pointer hover:bg-blue-50 transition-colors ${
           isToday ? 'bg-brand-50 ring-1 ring-inset ring-brand-200' : 'bg-white'
-        }`}
+        } ${draggedWorkout ? 'hover:bg-blue-100' : ''}`}
       >
         <span className={`text-xs font-bold p-1 rounded ${isToday ? 'text-brand-600 bg-brand-100' : 'text-slate-400'}`}>{d}</span>
         <div className="mt-1 space-y-1 overflow-y-auto h-20 scrollbar-thin scrollbar-thumb-slate-200">
@@ -74,6 +76,10 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
                   draggable={true}
                   onDragStart={(e) => handleDragStart(e, w.id)}
                   onDragEnd={handleDragEnd}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedWorkout(w);
+                  }}
                   className={`group relative bg-white border-l-4 border-brand-500 pl-2 pr-1 py-1 rounded-r border-y border-r border-slate-100 shadow-sm hover:shadow-md transition-all ${
                     draggedWorkout === w.id ? 'opacity-50' : ''
                   } cursor-move`}
@@ -84,8 +90,9 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
                     </div>
                     <div className="font-bold text-xs text-slate-800 leading-tight line-clamp-2">{w.workout.title}</div>
                     <div className="absolute right-1 top-1 hidden group-hover:flex gap-1 bg-white/90 backdrop-blur-sm p-0.5 rounded shadow-sm border border-slate-100">
-                         <button onClick={(e) => { e.stopPropagation(); onRepeatWorkout(w.workout); }} className="text-brand-600 hover:bg-brand-50 p-1 rounded" title="Copy Workout"><Copy className="w-3 h-3" /></button>
-                        <button onClick={(e) => { e.stopPropagation(); onDeleteWorkout(w.id); }} className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete Workout"><Trash2 className="w-3 h-3" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setSelectedWorkout(w); }} className="text-blue-600 hover:bg-blue-50 p-1 rounded" title="View"><Eye className="w-3 h-3" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); onRepeatWorkout(w.workout); }} className="text-brand-600 hover:bg-brand-50 p-1 rounded" title="Copy"><Copy className="w-3 h-3" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); onDeleteWorkout(w.id); }} className="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete"><Trash2 className="w-3 h-3" /></button>
                     </div>
                 </div>
             ))}
@@ -95,7 +102,8 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+    <>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-6 flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 gap-4">
             <div className="flex items-center gap-4">
                  <h2 className="font-black text-2xl text-slate-800 tracking-tight">{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
@@ -115,7 +123,28 @@ const Calendar: React.FC<CalendarProps> = ({ workouts, onSelectDate, onDeleteWor
         </div>
         <div className="grid grid-cols-7 text-center bg-slate-50 border-b border-slate-200">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (<div key={day} className="py-3 text-xs font-bold text-slate-400 uppercase tracking-wider">{day}</div>))}</div>
         <div className="grid grid-cols-7 bg-slate-50 gap-px border-b border-slate-200">{days}</div>
-    </div>
+      </div>
+
+      {/* Workout Detail Modal */}
+      {selectedWorkout && (
+        <WorkoutDetailModal
+          workout={selectedWorkout}
+          onClose={() => setSelectedWorkout(null)}
+          onEdit={(date) => {
+            setSelectedWorkout(null);
+            onSelectDate(date);
+          }}
+          onCopy={() => {
+            onRepeatWorkout(selectedWorkout.workout);
+            setSelectedWorkout(null);
+          }}
+          onDelete={() => {
+            onDeleteWorkout(selectedWorkout.id);
+            setSelectedWorkout(null);
+          }}
+        />
+      )}
+    </>
   );
 };
 export default Calendar;
