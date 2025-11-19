@@ -1,7 +1,8 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { ParsedWorkout } from '../types';
 
+// Initialize the client with the API key from the environment variable.
+// The vite.config.ts file ensures process.env.API_KEY is populated during build.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const parseWorkoutWithAI = async (
