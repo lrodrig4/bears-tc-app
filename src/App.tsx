@@ -4,6 +4,7 @@ import { getPaces } from './utils/timeMath';
 import { StorageService } from './services/storage';
 import Login from './components/Login';
 import Calendar from './components/Calendar';
+import AthleteCalendar from './components/AthleteCalendar';
 import CoachBuilder from './components/CoachBuilder';
 import CoachRoster from './components/CoachRoster';
 import WorkoutViewer from './components/WorkoutViewer';
@@ -37,7 +38,7 @@ const App: React.FC = () => {
   const [managedGroups, setManagedGroups] = useState<string[]>([]);
   const [newGroupInput, setNewGroupInput] = useState('');
 
-  const [athleteTab, setAthleteTab] = useState<'training' | 'paces' | 'leaderboard' | 'mentorship'>('training');
+  const [athleteTab, setAthleteTab] = useState<'training' | 'calendar' | 'paces' | 'leaderboard' | 'mentorship'>('training');
   const [groupingWorkout, setGroupingWorkout] = useState<ParsedWorkout | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [newPr, setNewPr] = useState('');
@@ -125,7 +126,19 @@ const App: React.FC = () => {
 
   const handleRepeatWorkout = (workout: ParsedWorkout) => {
       setPrefilledWorkout(workout);
-      setView('dashboard'); 
+      setView('dashboard');
+  };
+
+  const handleMoveWorkout = (workoutId: string, newDate: string) => {
+      const workout = schedule.find(w => w.id === workoutId);
+      if (workout) {
+          // Delete old workout
+          StorageService.deleteWorkout(workoutId);
+          // Create new workout with updated date
+          const updatedWorkout = { ...workout, id: `${Date.now()}`, date: newDate };
+          StorageService.saveWorkoutToSchedule(updatedWorkout);
+          refreshData();
+      }
   };
 
   const handleLoadLibraryWorkout = (workout: ParsedWorkout) => {
@@ -287,7 +300,7 @@ const App: React.FC = () => {
                         </div>
                      </>
                  ) : view === 'calendar' ? (
-                     <Calendar workouts={schedule} onSelectDate={(d) => { setSelectedDate(d); setView('dashboard'); }} onDeleteWorkout={handleCoachDeleteWorkout} onRepeatWorkout={handleRepeatWorkout} />
+                     <Calendar workouts={schedule} onSelectDate={(d) => { setSelectedDate(d); setView('dashboard'); }} onDeleteWorkout={handleCoachDeleteWorkout} onRepeatWorkout={handleRepeatWorkout} onMoveWorkout={handleMoveWorkout} />
                  ) : view === 'roster' ? (
                     <CoachRoster />
                  ) : view === 'settings' ? (
@@ -379,7 +392,8 @@ const App: React.FC = () => {
             </div>
             
             <div className="flex bg-white p-1.5 rounded-xl shadow-sm border border-slate-200 mb-6">
-                <button onClick={() => setAthleteTab('training')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'training' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Training</button>
+                <button onClick={() => setAthleteTab('training')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'training' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Today</button>
+                <button onClick={() => setAthleteTab('calendar')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'calendar' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Calendar</button>
                 <button onClick={() => setAthleteTab('paces')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'paces' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Paces</button>
                 <button onClick={() => setAthleteTab('leaderboard')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'leaderboard' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Rankings</button>
                 <button onClick={() => setAthleteTab('mentorship')} className={`flex-1 py-2.5 text-xs font-bold rounded-lg ${athleteTab === 'mentorship' ? 'bg-brand-50 text-brand-700' : 'text-slate-400'}`}>Team</button>
@@ -400,6 +414,19 @@ const App: React.FC = () => {
                             <p className="text-sm text-slate-500">No official workout scheduled for <strong>{user.group}</strong>.</p>
                         </div>
                     )}
+                </section>
+            )}
+            {athleteTab === 'calendar' && (
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center gap-2 mb-4"><CalendarIcon className="w-5 h-5 text-brand-600" /><h2 className="font-bold text-slate-800 text-lg">Training Calendar</h2></div>
+                    <AthleteCalendar
+                        workouts={schedule}
+                        userGroup={user.group}
+                        onSelectDate={(date) => {
+                            setSelectedDate(date);
+                            setAthleteTab('training');
+                        }}
+                    />
                 </section>
             )}
             {athleteTab === 'paces' && (
