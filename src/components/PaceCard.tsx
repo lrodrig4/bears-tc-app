@@ -5,116 +5,160 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PaceCardProps { paces: PaceData; }
 
-interface PaceZoneInfo {
-  name: string;
-  pace: string;
-  color: string;
-  feel: string;
-  benefit: string;
-}
-
 const PaceCard: React.FC<PaceCardProps> = ({ paces }) => {
   const [expanded, setExpanded] = useState(true);
-  const splitDistances = [{ label: '200m', val: 200 }, { label: '400m', val: 400 }, { label: '800m', val: 800 }, { label: '1k', val: 1000 }, { label: 'Mile', val: 1609 }];
-  const activeZones = [Zone.STEADY, Zone.TEMPO, Zone.THRESHOLD, Zone.CV, Zone.RACE_5K, Zone.RACE_3200, Zone.RACE_1600];
-
-  const trainingZones: PaceZoneInfo[] = [
-    {
-      name: 'Recovery',
-      pace: paces.recovery,
-      color: 'green',
-      feel: 'Very comfortable, conversational pace. Should feel easy throughout.',
-      benefit: 'Promotes muscle repair, increases blood flow, and aids recovery between hard sessions.'
-    },
-    {
-      name: 'Foundation',
-      pace: paces.foundation,
-      color: 'emerald',
-      feel: 'Comfortable, sustainable pace. Can hold conversation but with some effort.',
-      benefit: 'Builds aerobic base, strengthens heart, improves fat utilization and endurance capacity.'
-    },
-    {
-      name: 'Steady',
-      pace: paces.steady,
-      color: 'teal',
-      feel: 'Moderate effort, rhythm-focused. Breathing is deeper but controlled.',
-      benefit: 'Enhances aerobic efficiency, builds muscular endurance, and bridges easy and hard training.'
-    },
-    {
-      name: 'Tempo',
-      pace: paces.tempo,
-      color: 'orange',
-      feel: 'Comfortably hard. Breathing is labored but rhythmic. Can say short phrases.',
-      benefit: 'Improves lactate clearance, raises anaerobic threshold, and builds mental toughness.'
-    },
-    {
-      name: 'Lactate Threshold',
-      pace: paces.threshold,
-      color: 'amber',
-      feel: 'Hard effort, at the edge of comfort. Breathing is heavy, talking is difficult.',
-      benefit: 'Pushes lactate threshold higher, improves sustained speed, critical for race performance.'
-    },
-    {
-      name: 'Critical Velocity (CV)',
-      pace: paces.cv,
-      color: 'red',
-      feel: 'Very hard, near race effort. Breathing is rapid and deep, minimal talking possible.',
-      benefit: 'Maximizes VO2max, improves running economy, prepares body for race-day intensity.'
-    },
-    {
-      name: '5K Race Pace',
-      pace: paces.race5k,
-      color: 'rose',
-      feel: 'Hard, sustained race effort. Focus on rhythm and maintaining form under fatigue.',
-      benefit: 'Specific race preparation, builds confidence at target pace, improves speed endurance.'
-    },
-    {
-      name: '3200m / 3K Pace',
-      pace: paces.race3200,
-      color: 'pink',
-      feel: 'Fast and uncomfortable. High effort with controlled aggression throughout.',
-      benefit: 'Develops speed endurance, strengthens neuromuscular power, prepares for mid-distance racing.'
-    },
-    {
-      name: '1600m / Mile Pace',
-      pace: paces.race1600,
-      color: 'fuchsia',
-      feel: 'Very fast, requires mental focus. Breathing is maximal, legs burn quickly.',
-      benefit: 'Builds top-end speed, improves anaerobic capacity, enhances kick and finishing speed.'
-    },
-    {
-      name: '800m Pace',
-      pace: paces.race800,
-      color: 'purple',
-      feel: 'Extremely hard sprint effort. Near max heart rate, very high leg turnover.',
-      benefit: 'Develops explosive speed, improves lactate tolerance, builds raw power and acceleration.'
-    },
-    {
-      name: '400m Pace',
-      pace: paces.race400,
-      color: 'violet',
-      feel: 'All-out sprint. Maximum effort with focus on form and powerful drive.',
-      benefit: 'Maximizes speed and power output, improves neuromuscular recruitment, sharpens racing mechanics.'
-    }
+  const splitDistances = [
+    { label: '200m', val: 200 },
+    { label: '300m', val: 300 },
+    { label: '400m', val: 400 },
+    { label: '600m', val: 600 },
+    { label: '800m', val: 800 },
+    { label: '1k', val: 1000 },
+    { label: 'Mile', val: 1609 }
   ];
+  const activeZones = [Zone.STEADY, Zone.TEMPO, Zone.THRESHOLD, Zone.CV, Zone.RACE_5K, Zone.RACE_3200, Zone.RACE_1600, Zone.RACE_800];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Training Zones */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wide">My Paces</h3>
-        {trainingZones.map((zone) => (
-          <div key={zone.name} className={`bg-white border-l-4 border-${zone.color}-500 rounded-r-lg shadow-sm p-4 hover:shadow-md transition-shadow`}>
-            <div className="flex justify-between items-start mb-2">
-              <h4 className={`font-bold text-${zone.color}-800`}>{zone.name}</h4>
-              <span className="font-mono font-bold text-lg">{zone.pace}</span>
-            </div>
-            <p className="text-xs text-slate-600 italic mb-1">{zone.feel}</p>
-            <p className="text-xs text-slate-700 font-medium">{zone.benefit}</p>
+        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">TRAINING ZONES</h3>
+
+        {/* Recovery */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">RECOVERY</h4>
+            <span className="font-mono font-bold text-base">{paces.recovery} /mi</span>
           </div>
-        ))}
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> Promotes blood flow & repair.</p>
+          <p className="text-xs text-amber-700"><span className="font-bold">Caution:</span> Going too fast adds stress and delays recovery. Keep it effortless.</p>
+        </div>
+
+        {/* Foundation / Easy */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">FOUNDATION / EASY</h4>
+            <span className="font-mono font-bold text-base">{paces.foundation} /mi</span>
+          </div>
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> Builds aerobic volume, capillaries, and mitochondria.</p>
+          <p className="text-xs text-amber-700"><span className="font-bold">Caution:</span> Too fast enters the "grey zone". Keep it conversational.</p>
+        </div>
+
+        {/* Steady State */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">STEADY STATE</h4>
+            <span className="font-mono font-bold text-base">{paces.steady} /mi</span>
+          </div>
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> High-end aerobic conditioning.</p>
+          <p className="text-xs text-slate-600"><span className="font-bold">Feel:</span> Rhythm running. Faster than easy, slower than tempo.</p>
+        </div>
+
+        {/* Tempo */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">TEMPO</h4>
+            <span className="font-mono font-bold text-base">{paces.tempo} /mi</span>
+          </div>
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> Increases lactate clearance efficiency.</p>
+          <p className="text-xs text-slate-600"><span className="font-bold">Feel:</span> Comfortably Hard. Sustainable for 20-40 mins.</p>
+        </div>
+
+        {/* Lactate Threshold */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">LACTATE THRESHOLD</h4>
+            <span className="font-mono font-bold text-base">{paces.threshold} /mi</span>
+          </div>
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> The upper limit of aerobic running.</p>
+          <p className="text-xs text-slate-600"><span className="font-bold">Feel:</span> Hard but controlled. 60 min race pace effort.</p>
+        </div>
+
+        {/* Critical Velocity */}
+        <div className="bg-white rounded-lg shadow-sm p-4 border border-slate-200">
+          <div className="flex justify-between items-baseline mb-2">
+            <h4 className="font-bold text-slate-800 uppercase text-sm">CRITICAL VELOCITY (CV)</h4>
+            <span className="font-mono font-bold text-base">{paces.cv} /mi</span>
+          </div>
+          <p className="text-xs text-slate-700 mb-1"><span className="font-bold">Why:</span> Expands VO2 Max and fast-twitch endurance.</p>
+          <p className="text-xs text-slate-600"><span className="font-bold">Feel:</span> Approx 30-35 min race pace. Hard.</p>
+        </div>
       </div>
-      <div className="pt-2"><button onClick={() => setExpanded(!expanded)} className="w-full flex items-center justify-between text-sm font-bold text-brand-600 bg-brand-50 p-2 rounded-lg"><span>Interval Splits</span>{expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</button>
-        {expanded && (<div className="bg-white border rounded-lg overflow-hidden mt-2"><table className="w-full text-xs text-left"><thead className="bg-slate-50"><tr><th className="px-2 py-2">Zone</th>{splitDistances.map(d => <th key={d.label} className="px-2 py-2">{d.label}</th>)}</tr></thead><tbody className="divide-y">{activeZones.map(zone => (<tr key={zone}><td className="px-2 py-2 font-bold">{zone.replace('Race', '')}</td>{splitDistances.map(d => <td key={d.label} className="px-2 py-2 font-mono">{calculateSplit(d.val, 'm', zone, paces.vdot)}</td>)}</tr>))}</tbody></table></div>)}
+
+      {/* Race Equivalents */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">RACE EQUIVALENTS</h3>
+        <div className="grid grid-cols-1 gap-3">
+          <div className="bg-gradient-to-r from-rose-50 to-white rounded-lg shadow-sm p-3 border border-rose-200">
+            <div className="flex justify-between items-baseline">
+              <h4 className="font-bold text-slate-800 text-sm">5K PACE</h4>
+              <span className="font-mono font-bold text-lg text-rose-700">{paces.race5k}/mi</span>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-pink-50 to-white rounded-lg shadow-sm p-3 border border-pink-200">
+            <div className="flex justify-between items-baseline">
+              <h4 className="font-bold text-slate-800 text-sm">3200M PACE</h4>
+              <span className="font-mono font-bold text-lg text-pink-700">{paces.race3200}/mi</span>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-fuchsia-50 to-white rounded-lg shadow-sm p-3 border border-fuchsia-200">
+            <div className="flex justify-between items-baseline">
+              <h4 className="font-bold text-slate-800 text-sm">1600M PACE</h4>
+              <span className="font-mono font-bold text-lg text-fuchsia-700">{paces.race1600}/mi</span>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-purple-50 to-white rounded-lg shadow-sm p-3 border border-purple-200">
+            <div className="flex justify-between items-baseline">
+              <h4 className="font-bold text-slate-800 text-sm">800M PACE</h4>
+              <span className="font-mono font-bold text-lg text-purple-700">{paces.race800}/mi</span>
+            </div>
+          </div>
+          <div className="bg-gradient-to-r from-violet-50 to-white rounded-lg shadow-sm p-3 border border-violet-200">
+            <div className="flex justify-between items-baseline">
+              <h4 className="font-bold text-slate-800 text-sm">400M PACE</h4>
+              <span className="font-mono font-bold text-lg text-violet-700">{paces.race400}/mi</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Detailed Interval Splits */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">DETAILED INTERVAL SPLITS</h3>
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-between text-sm font-bold text-brand-600 bg-brand-50 p-2 rounded-lg hover:bg-brand-100 transition-colors"
+        >
+          <span>{expanded ? 'Hide' : 'Show'} Interval Splits Table</span>
+          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
+
+        {expanded && (
+          <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto shadow-sm">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-100 border-b border-slate-200">
+                <tr>
+                  <th className="px-3 py-2 text-left font-bold text-slate-700">Zone</th>
+                  {splitDistances.map(d => (
+                    <th key={d.label} className="px-3 py-2 text-center font-bold text-slate-700">{d.label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {activeZones.map(zone => (
+                  <tr key={zone} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-3 py-2 font-bold text-slate-800">{zone.replace(' Race', '').replace('Lactate Threshold', 'LT')}</td>
+                    {splitDistances.map(d => (
+                      <td key={d.label} className="px-3 py-2 font-mono text-center text-slate-700">
+                        {calculateSplit(d.val, 'm', zone, paces.vdot)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
