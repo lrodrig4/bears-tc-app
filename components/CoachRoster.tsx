@@ -270,7 +270,7 @@ const CoachRoster: React.FC = () => {
                                             {mentorName}
                                         </button>
                                     )}
-                                td>
+                                </td>
                                 <td className="px-4 py-3 text-right flex justify-end gap-2">
                                     <button onClick={() => handleStartEdit(user)} className="text-slate-400 hover:text-brand-600 hover:bg-brand-50 p-1 rounded transition-colors" title="Quick Edit">
                                         <Edit2 className="w-4 h-4" />

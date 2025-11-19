@@ -31,7 +31,7 @@ const InstallPrompt: React.FC = () => {
                 <div className="flex items-center gap-2"><span className="bg-white/20 w-5 h-5 flex items-center justify-center rounded-full font-bold">2</span><span>Select <span className="font-bold">Add to Home Screen</span> <PlusSquare className="w-3 h-3 inline mx-1" />.</span></div>
               </div>
             ) : (
-              <div className="text-xs bg-white/10 p-3 rounded-lg border border-white/5">Tap menu (⋮) -> "Install App".</div>
+              <div className="text-xs bg-white/10 p-3 rounded-lg border border-white/5">Tap menu (⋮) {'->'} "Install App".</div>
             )}
           </div>
         </div>
